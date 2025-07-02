@@ -44,9 +44,10 @@ def d_in_air(d):
 
 
 def none_interpolator(p, v, fill_value):
-    if p.size >= 3 * 2:
+    try:
         return scipy.interpolate.LinearNDInterpolator(p, v, fill_value=fill_value)
-    else:
+    except Exception as e:
+        print(f'ERROR: {e.__class__.__name__}')
         return None
 
 
