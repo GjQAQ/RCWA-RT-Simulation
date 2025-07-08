@@ -18,16 +18,16 @@ def make_17_points(z, r):
     return points
 
 
-def make_more_points(z, r):
-    apt = rt.CircularAperture(r * 2)
-    x, y = apt.sample_unipolar(11, 8)
+def make_more_points(z, r, n=11):
+    apt = rt.CircularAperture(r)
+    x, y = apt.sample_unipolar(n, 8)
     z = torch.full_like(x, z)
     points = torch.stack([x, y, z], -1)
     return points
 
 
 def trace(optics, sampling_size, points):
-    entry_points = optics.first.sample('rect', sampling_size, sampling_size)  # (spp, 3)
+    entry_points = optics.first.sample('rect', sampling_size)  # (spp, 3)
     n_spp = entry_points.size(0)
     intensity = 1 / n_spp
     wl = optics.new_tensor(conf.wl).reshape(-1).unsqueeze(-1)  # (N_wl,1)
