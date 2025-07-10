@@ -31,6 +31,7 @@ def layout_reflective(transmittance, phase_shift, out_d):
         rt.CircularStop(12.906e-3, d=-62.5e-3),
         rt.ThinLens(62.5e-3, 'vacuum', 129.06e-3, d=-62.5e-3),
     ])
+    sq[1].reflective = True
     sq.freeze()
     return sq
 
@@ -38,7 +39,7 @@ def layout_reflective(transmittance, phase_shift, out_d):
 def layout_fixed(transmittance, phase_shift, out_d):
     sq = rt.CoaxialSurfaceSequence([
         rt.ThinLens(5e-3, 'vacuum', 10.325e-3, d=5e-3),
-        grating.FixedGrating(transmittance, phase_shift, out_d, 'vacuum', 5e-3, d=5e-3),
+        grating.FixedGrating(transmittance, phase_shift, out_d, 'vacuum', 5e-3, d=6.25e-3),
         rt.ThinLens(6.25e-3, 'vacuum', 12.906e-3, d=6.25e-3),
         rt.CircularStop(12.906e-3, d=62.5e-3),
         rt.ThinLens(62.5e-3, 'vacuum', 129.06e-3, d=62.5e-3),

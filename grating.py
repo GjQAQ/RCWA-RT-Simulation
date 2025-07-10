@@ -10,11 +10,6 @@ from dnois.optics import rt
 Ts = torch.Tensor
 
 
-def print_order_wise(x, print_dim):
-    dims = tuple(range(x.ndim - print_dim))
-    print(f'{x.mean(dims)=}, {torch.allclose(x.std(dims), torch.zeros_like(x.std(dims)))}')
-
-
 class CustomizedGrating(rt.Planar):
     def __init__(
         self,
@@ -53,13 +48,10 @@ class CustomizedGrating(rt.Planar):
             lambda _: torch.zeros_like(theta),
             lambda _: torch.remainder(torch.atan2(d_local[..., 1], -d_local[..., 0]) + 2 * np.pi, 2 * np.pi),
         )(sin_theta_abs)
-        # print(f'{theta.mean().item()=}, {theta.std().item()=}, {phi.mean().item()=}, {phi.std().item()=}')
-        # print(f'{theta=}, {phi=}')
         intp_points = torch.stack([theta, phi], dim=-1).detach().cpu().numpy()  # (..., 2)
 
         d = self.d_intp(intp_points)  # (..., N_order, 3)
         d = torch.from_numpy(d).to(dtype=self.dtype, device=self.device)
-        # print_order_wise(d, 2)
         d = d.unbind(-2)
         d = torch.cat(d, dim=self.expand_dim if self.expand_dim >= 0 else self.expand_dim - 1)
         valid = torch.sum(d.square(), -1) > 0.9
@@ -94,7 +86,7 @@ class CustomizedGrating(rt.Planar):
         return new_ray
 
     def reflect(self, ray: rt.BatchedRay) -> rt.BatchedRay:
-        raise NotImplementedError()
+        return self.refract(ray, True)
 
     def backward_valid(self, valid):
         split_valid = valid.chunk(self.n_order, self.expand_dim)
